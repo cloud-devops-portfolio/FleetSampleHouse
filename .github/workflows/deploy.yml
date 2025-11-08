@@ -7,6 +7,11 @@ on:
 jobs:
   deploy:
     runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        host: 
+          - 3.81.134.226
+          - 13.51.156.4
     steps:
       - uses: actions/checkout@v4
 
@@ -16,10 +21,8 @@ jobs:
           echo "${{ secrets.DOCKER_PASS }}" | docker login -u ${{ secrets.DOCKER_USER }} --password-stdin
           docker push happycharlie2020/samplehouse:${{ github.sha }}
 
-      - name: Deploy to Web Nodes
+      - name: Deploy to Web Node ${{ matrix.host }}
         uses: appleboy/ssh-action@v0.1.10
-        env:
-          WEB_IPS: "3.81.134.226,13.51.156.4"
         with:
           host: ${{ matrix.host }}
           username: ec2-user
@@ -31,6 +34,3 @@ jobs:
             docker run -d --name app -p 3000:3000 \
               -e DB_HOST=35.222.230.74 \
               happycharlie2020/samplehouse:${{ github.sha }}
-    strategy:
-      matrix:
-        host: [3.81.134.226, 13.51.156.4]
