@@ -8,7 +8,7 @@ jobs:
   deploy:
     runs-on: ubuntu-latest
     env:
-      SSH_PRIVATE_KEY: ${{ secrets.DEVOPS_KEY }}
+      SSH_PRIVATE_KEY: ${{ secrets.DEVOPS_KEY }}   # 全局 env
     strategy:
       matrix:
         host: 
@@ -28,7 +28,7 @@ jobs:
         with:
           host: ${{ matrix.host }}
           username: ec2-user
-          key: ${{ env.SSH_PRIVATE_KEY }}
+          key: ${{ env.SSH_PRIVATE_KEY }}   # 正确！GitHub 自动注入 INPUT_KEY
           script: |
             echo "SSH to $(hostname)"
             docker pull happycharlie2020/samplehouse:${{ github.sha }}
