@@ -7,8 +7,6 @@ on:
 jobs:
   deploy:
     runs-on: ubuntu-latest
-    env:
-      SSH_PRIVATE_KEY: ${{ secrets.DEVOPS_KEY }}
     strategy:
       matrix:
         host: 
@@ -24,11 +22,11 @@ jobs:
           docker push happycharlie2020/samplehouse:${{ github.sha }}
 
       - name: Deploy to Web Node ${{ matrix.host }}
-        uses: appleboy/ssh-action@v1.0.3   # 升级版本！
+        uses: appleboy/ssh-action@v1.0.3
         with:
           host: ${{ matrix.host }}
           username: ec2-user
-          key: ${{ env.SSH_PRIVATE_KEY }}   # v1.0.3 支持 env 传 key
+          key: ${{ secrets.DEVOPS_KEY }}   # 直接传 secrets！
           script: |
             echo "SSH to $(hostname)"
             docker pull happycharlie2020/samplehouse:${{ github.sha }}
