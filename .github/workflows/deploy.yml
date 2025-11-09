@@ -22,13 +22,11 @@ jobs:
           docker push happycharlie2020/samplehouse:${{ github.sha }}
 
       - name: Deploy to Web Node ${{ matrix.host }}
-        env:
-          SSH_KEY: ${{ secrets.DEVOPS_KEY }}
         uses: appleboy/ssh-action@v1.0.3
         with:
           host: ${{ matrix.host }}
           username: ec2-user
-          key: $SSH_KEY
+          key: ${{ secrets.DEVOPS_KEY }}   # 直接传 secrets！
           script: |
             echo "SSH to $(hostname)"
             docker pull happycharlie2020/samplehouse:${{ github.sha }}
