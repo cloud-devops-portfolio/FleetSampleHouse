@@ -7,7 +7,7 @@ http.createServer((req, res) => {
     res.writeHead(200); res.end('healthy');
   } else {
     res.writeHead(200);
-    res.end(`Hello from ${os.hostname()}! FleetSampleHouse v5.12 - CI/CD Auto Deployed!\n`);
+    res.end(`Hello from ${os.hostname()}! FleetSampleHouse v5.13 - CI/CD Auto Deployed!\n`);
   }
 }).listen(port);
 console.log(`App running on port ${port}`);
