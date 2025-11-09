@@ -7,6 +7,8 @@ on:
 jobs:
   deploy:
     runs-on: ubuntu-latest
+    env:
+      SSH_PRIVATE_KEY: ${{ secrets.DEVOPS_KEY }}   # 正确！全局 env
     strategy:
       matrix:
         host: 
@@ -22,19 +24,15 @@ jobs:
           docker push happycharlie2020/samplehouse:${{ github.sha }}
 
       - name: Debug Key
-        env:
-          SSH_PRIVATE_KEY: ${{ secrets.DEVOPS_KEY }}
         run: |
           echo "Key first 50: $SSH_PRIVATE_KEY" | cut -c1-50
 
       - name: Deploy to Web Node ${{ matrix.host }}
         uses: appleboy/ssh-action@v0.1.10
-        env:
-          SSH_PRIVATE_KEY: ${{ secrets.DEVOPS_KEY }}
         with:
           host: ${{ matrix.host }}
           username: ec2-user
-          key: ${{ env.SSH_PRIVATE_KEY }}   # 正确！action 读取 INPUT_KEY
+          key: ${{ env.SSH_PRIVATE_KEY }}   # 正确！读取全局 env
           script: |
             echo "SSH to $(hostname)"
             docker pull happycharlie2020/samplehouse:${{ github.sha }}
