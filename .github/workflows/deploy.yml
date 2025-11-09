@@ -8,7 +8,7 @@ jobs:
   deploy:
     runs-on: ubuntu-latest
     env:
-      SSH_PRIVATE_KEY: ${{ secrets.DEVOPS_KEY }}   # 正确！全局 env
+      SSH_PRIVATE_KEY: ${{ secrets.DEVOPS_KEY }}
     strategy:
       matrix:
         host: 
@@ -23,12 +23,17 @@ jobs:
           echo "${{ secrets.DOCKER_PASS }}" | docker login -u ${{ secrets.DOCKER_USER }} --password-stdin
           docker push happycharlie2020/samplehouse:${{ github.sha }}
 
-      - name: Debug Key
-        run: |
-          echo "Key first 50: $SSH_PRIVATE_KEY" | cut -c1-50
-
       - name: Deploy to Web Node ${{ matrix.host }}
         uses: appleboy/ssh-action@v0.1.10
         with:
           host: ${{ matrix.host }}
           username: ec2-user
+          key: ${{ env.SSH_PRIVATE_KEY }}
+          script: |
+            echo "SSH to $(hostname)"
+            docker pull happycharlie2020/samplehouse:${{ github.sha }}
+            docker stop app || true
+            docker rm app || true
+            docker run -d --name app -p 3000:3000 \
+              -e DB_HOST=35.222.230.74 \
+              happycharlie2020/samplehouse:${{ github.sha }}
