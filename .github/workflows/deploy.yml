@@ -1,5 +1,5 @@
 name: Deploy SampleHouse
- 
+
 on:
   push:
     branches: [ main ]
@@ -17,11 +17,6 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: Debug Secrets
-        run: |
-          echo "DEVOPS_KEY exists: ${{ secrets.DEVOPS_KEY != '' }}"
-          echo "Key first 50: ${{ secrets.DEVOPS_KEY }}" | cut -c1-50
-
       - name: Build & Push Docker
         run: |
           docker build -t happycharlie2020/samplehouse:${{ github.sha }} .
@@ -29,11 +24,11 @@ jobs:
           docker push happycharlie2020/samplehouse:${{ github.sha }}
 
       - name: Deploy to Web Node ${{ matrix.host }}
-        uses: appleboy/ssh-action@v0.1.10
+        uses: appleboy/ssh-action@v1.0.3   # 升级版本！
         with:
           host: ${{ matrix.host }}
           username: ec2-user
-          key: ${{ env.SSH_PRIVATE_KEY }}
+          key: ${{ env.SSH_PRIVATE_KEY }}   # v1.0.3 支持 env 传 key
           script: |
             echo "SSH to $(hostname)"
             docker pull happycharlie2020/samplehouse:${{ github.sha }}
