@@ -8,7 +8,7 @@ jobs:
   deploy:
     runs-on: ubuntu-latest
     env:
-      SSH_PRIVATE_KEY: ${{ secrets.DEVOPS_KEY }}   # 全局 env
+      SSH_PRIVATE_KEY: ${{ secrets.DEVOPS_KEY }}
     strategy:
       matrix:
         host: 
@@ -16,6 +16,11 @@ jobs:
           - 13.51.156.4
     steps:
       - uses: actions/checkout@v4
+
+      - name: Debug Secrets
+        run: |
+          echo "DEVOPS_KEY exists: ${{ secrets.DEVOPS_KEY != '' }}"
+          echo "Key first 50: ${{ secrets.DEVOPS_KEY }}" | cut -c1-50
 
       - name: Build & Push Docker
         run: |
@@ -28,7 +33,7 @@ jobs:
         with:
           host: ${{ matrix.host }}
           username: ec2-user
-          key: ${{ env.SSH_PRIVATE_KEY }}   # 正确！GitHub 自动注入 INPUT_KEY
+          key: ${{ env.SSH_PRIVATE_KEY }}
           script: |
             echo "SSH to $(hostname)"
             docker pull happycharlie2020/samplehouse:${{ github.sha }}
