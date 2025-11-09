@@ -32,12 +32,3 @@ jobs:
         with:
           host: ${{ matrix.host }}
           username: ec2-user
-          key: ${{ env.SSH_PRIVATE_KEY }}   # 正确！读取全局 env
-          script: |
-            echo "SSH to $(hostname)"
-            docker pull happycharlie2020/samplehouse:${{ github.sha }}
-            docker stop app || true
-            docker rm app || true
-            docker run -d --name app -p 3000:3000 \
-              -e DB_HOST=35.222.230.74 \
-              happycharlie2020/samplehouse:${{ github.sha }}
