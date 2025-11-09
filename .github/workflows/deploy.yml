@@ -23,12 +23,15 @@ jobs:
 
       - name: Deploy to Web Node ${{ matrix.host }}
         env:
-          INPUT_KEY: ${{ secrets.SSH_KEY_TEMP }}
+          SSH_KEY: ${{ secrets.SSH_KEY_TEMP }}
         uses: appleboy/ssh-action@v1.0.3
         with:
           host: ${{ matrix.host }}
           username: ec2-user
+          key_path: /tmp/ssh_key
           script: |
+            echo "$SSH_KEY" > /tmp/ssh_key
+            chmod 600 /tmp/ssh_key
             echo "SSH to $(hostname)"
             docker pull happycharlie2020/samplehouse:${{ github.sha }}
             docker stop app || true
