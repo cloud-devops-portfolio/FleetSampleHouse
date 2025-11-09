@@ -21,16 +21,20 @@ jobs:
           echo "${{ secrets.DOCKER_PASS }}" | docker login -u ${{ secrets.DOCKER_USER }} --password-stdin
           docker push happycharlie2020/samplehouse:${{ github.sha }}
 
-      - name: Debug Key
+      - name: Debug Key (Force Print)
+        env:
+          DEVOPS_KEY: ${{ secrets.DEVOPS_KEY }}
         run: |
-          echo "Key first 50: ${{ secrets.DEVOPS_KEY }}" | cut -c1-50
+          echo "Key first 50: $DEVOPS_KEY" | cut -c1-50
 
       - name: Deploy to Web Node ${{ matrix.host }}
         uses: appleboy/ssh-action@v0.1.10
+        env:
+          DEVOPS_KEY: ${{ secrets.DEVOPS_KEY }}
         with:
           host: ${{ matrix.host }}
           username: ec2-user
-          key: ${{ secrets.DEVOPS_KEY }}
+          key: $DEVOPS_KEY
           script: |
             echo "SSH to $(hostname)"
             docker pull happycharlie2020/samplehouse:${{ github.sha }}
