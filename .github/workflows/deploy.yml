@@ -34,7 +34,7 @@ jobs:
         with:
           host: ${{ matrix.host }}
           username: ec2-user
-          key: $DEVOPS_KEY
+          key: ${{ env.DEVOPS_KEY }}  # 正确！用 env 传
           script: |
             echo "SSH to $(hostname)"
             docker pull happycharlie2020/samplehouse:${{ github.sha }}
